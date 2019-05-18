@@ -4,9 +4,17 @@ Emitter emitter;
 
 void setup() {
   size(500, 500);
+  smooth();
   strokeWeight(1);
   stroke(255);
   fill(255);
+
+  //screen boundary
+    walls.add(new Boundary(0, 0, width,  0));
+    walls.add(new Boundary(width, 0, width, height));
+    walls.add(new Boundary(0, 0, 0, height));
+    walls.add(new Boundary(0, height, width, height));
+
 
   for ( int i = 0; i < 3; i++) {
     float Ax = random(width);
@@ -15,7 +23,7 @@ void setup() {
     float By = random(height);
     walls.add(new Boundary(Ax, Ay, Bx, By));
   }
-  emitter = new Emitter(width / 2, height / 2, 160);
+  emitter = new Emitter(width / 2, height / 2, 200);
 }
 
 void draw() {

@@ -1,34 +1,61 @@
 class Emitter {
 
   PVector pos;
-  ArrayList<Ray> rays = new ArrayList();
+  ArrayList<PVector> rays = new ArrayList();
+
+  float n;
 
   Emitter(float x, float y, float n) {
     pos = new PVector(x, y);
+    this.n = n;
 
-    for (int i = 0; i < n; i++) {
-      rays.add(new Ray(pos, TWO_PI / n * i));
-    }
+    //for (float i = 0; i < this.n; i++) {
+    //  float ang = TWO_PI / this.n * i;
+    //  PVector ray = getRayVector(this.pos, ang, walls);
+    //  if (ray != null) rays.add(getRayVector(this.pos, ang, walls));
+    //}
   }
   void display() {
+
+    pos.x = mouseX;
+    pos.y = mouseY;
     ellipse(this.pos.x, this.pos.y, 10, 10);
-    for (int i = 0; i < rays.size(); i++) {
-      Ray ray = rays.get(i);
 
-      for ( int j = 0; j < walls.size(); j++) {
-        Boundary tempWall = walls.get(j);
-
-        //Point of intersection
-        PVector  POI = lineLine(ray.A, ray.B, tempWall.A, tempWall.B);
-        if (POI != null) {
-          ray.B = POI;
-        }
+    for (float i = 0; i < this.n; i++) {
+      float ang = TWO_PI / this.n * i;
+      PVector ray = getRayVector(this.pos, ang, walls);
+      if (ray != null) {
+        line(this.pos.x, this.pos.y, ray.x, ray.y);
       }
-      ray.display();
     }
   }
 
-  // Calculate the point of intersection for linte AB and CD
+
+  PVector getRayVector(PVector pos, float ang, ArrayList<Boundary> walls) {
+    float maxMag = dist(0, 0, width, height);
+    float mag = maxMag;
+    PVector ray = PVector.fromAngle(ang);
+    ray.setMag(mag);
+    ray.add(pos);
+
+    boolean hit = false;
+    for ( int i = 0; i < walls.size(); i++) {
+      Boundary tempWall = walls.get(i);
+
+      //Point of intersection
+      PVector  Intersection = lineLine(pos, ray, tempWall.A, tempWall.B);
+
+      //If a intersection exist ray = Intersection
+      if (Intersection != null) {
+        ray = Intersection;
+        hit = true;
+      }
+    }
+    if (hit) return ray;
+    return null;
+  }
+
+  // Find the point of intersection for linte AB and CD
   PVector lineLine(PVector A, PVector B, PVector C, PVector D) {
     Float uA =   ((D.x-C.x)*(A.y-C.y) - (D.y-C.y)*(A.x-C.x)) / ((D.y-C.y)*(B.x-A.x) - (D.x-C.x)*(B.y-A.y));
     Float uB =   ((B.x-A.x)*(A.y-C.y) - (B.y-A.y)*(A.x-C.x)) / ((D.y-C.y)*(B.x-A.x) - (D.x-C.x)*(B.y-A.y));
